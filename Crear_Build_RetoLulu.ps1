@@ -21,7 +21,8 @@ $excludedFiles = @(
     '.retolulu-state.json', '.retolulu-installed-manifest.json',
     '.gitignore', '.curseclient', 'RetoLulu.code-workspace',
     'Crear_Build_RetoLulu.bat', 'Crear_Build_RetoLulu.ps1',
-    'README.md', 'realms_persistence.json', 'usercache.json', 'usernamecache.json'
+    'README.md', 'minecraftinstance.json', 'realms_persistence.json',
+    'usercache.json', 'usernamecache.json'
 )
 
 function Is-Included([IO.FileInfo]$File) {

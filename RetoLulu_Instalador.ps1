@@ -146,20 +146,20 @@ function Ask-RecommendedOptions([bool]$DefaultValue) {
 }
 
 function Test-InstalledFiles($Manifest, [bool]$ApplyOptions) {
-    $problems = New-Object Collections.Generic.List[object]
+    $problems = @()
     foreach ($file in @($Manifest.files)) {
         $relative = [string]$file.path
         if (-not $ApplyOptions -and $relative -ieq 'options.txt') { continue }
         $target = Resolve-SafePath -RelativePath $relative -Root $InstanceRoot
         if (-not (Test-Path -LiteralPath $target -PathType Leaf)) {
-            $problems.Add([pscustomobject]@{ File = $file; Reason = 'faltante' })
+            $problems += [pscustomobject]@{ File = $file; Reason = 'faltante' }
             continue
         }
         if ((Get-Sha256 $target) -ne ([string]$file.sha256).ToLowerInvariant()) {
-            $problems.Add([pscustomobject]@{ File = $file; Reason = 'modificado' })
+            $problems += [pscustomobject]@{ File = $file; Reason = 'modificado' }
         }
     }
-    return @($problems)
+    return $problems
 }
 
 function Install-Build($Info, [bool]$ApplyOptions, $PreviousManifest) {

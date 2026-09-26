@@ -139,7 +139,7 @@ function Ask-RecommendedOptions([bool]$DefaultValue) {
     while ($true) {
         $answer = (Read-Host "Aplicar la configuracion recomendada de Reto Lulu? [S/N] (predeterminado: $defaultText)").Trim()
         if ([string]::IsNullOrWhiteSpace($answer)) { return $DefaultValue }
-        if ($answer -match '^(s|si|sí|y|yes)$') { return $true }
+        if ($answer -match '^(s|si|y|yes)$') { return $true }
         if ($answer -match '^(n|no)$') { return $false }
         Write-Host 'Escribe S o N.' -ForegroundColor Yellow
     }
@@ -216,7 +216,7 @@ function Install-Build($Info, [bool]$ApplyOptions, $PreviousManifest) {
         $source = Resolve-SafePath -RelativePath $relative -Root $payloadRoot
         $target = Resolve-SafePath -RelativePath $relative -Root $InstanceRoot
         if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Falta un archivo en la build: $relative" }
-        if ((Get-Sha256 $source) -ne ([string]$file.sha256).ToLowerInvariant()) { throw "Archivo dañado en la build: $relative" }
+        if ((Get-Sha256 $source) -ne ([string]$file.sha256).ToLowerInvariant()) { throw "Archivo danado en la build: $relative" }
         [IO.Directory]::CreateDirectory((Split-Path -Parent $target)) | Out-Null
         Copy-Item -LiteralPath $source -Destination $target -Force
         $percent = [int](($index * 100) / [Math]::Max(1, $files.Count))

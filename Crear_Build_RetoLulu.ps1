@@ -51,14 +51,32 @@ try {
         foreach ($file in $files) {
             $index++
             $relative = $file.FullName.Substring($Root.Length).TrimStart('\').Replace('\', '/')
-            $hash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-            $manifestFiles.Add([ordered]@{ path = $relative; sha256 = $hash; size = $file.Length })
-            [IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
-                $zip,
+            $fileEntry = $zip.CreateEntry("payload/$relative", [IO.Compression.CompressionLevel]::Optimal)
+            $sourceStream = [IO.File]::Open(
                 $file.FullName,
-                "payload/$relative",
-                [IO.Compression.CompressionLevel]::Optimal
-            ) | Out-Null
+                [IO.FileMode]::Open,
+                [IO.FileAccess]::Read,
+                ([IO.FileShare]::ReadWrite -bor [IO.FileShare]::Delete)
+            )
+            $entryOutput = $fileEntry.Open()
+            $hasher = [Security.Cryptography.SHA256]::Create()
+            [long]$bytesWritten = 0
+            try {
+                $buffer = New-Object byte[] (1MB)
+                while (($read = $sourceStream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+                    $hasher.TransformBlock($buffer, 0, $read, $buffer, 0) | Out-Null
+                    $entryOutput.Write($buffer, 0, $read)
+                    $bytesWritten += $read
+                }
+                $hasher.TransformFinalBlock((New-Object byte[] 0), 0, 0) | Out-Null
+                $hash = ([BitConverter]::ToString($hasher.Hash)).Replace('-', '').ToLowerInvariant()
+            }
+            finally {
+                $hasher.Dispose()
+                $entryOutput.Dispose()
+                $sourceStream.Dispose()
+            }
+            $manifestFiles.Add([ordered]@{ path = $relative; sha256 = $hash; size = $bytesWritten })
             $percent = [int](($index * 100) / $files.Count)
             Write-Progress -Activity 'Empaquetando Reto Lulu' -Status "$percent% - $relative" -PercentComplete $percent
         }

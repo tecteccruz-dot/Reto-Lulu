@@ -91,8 +91,12 @@ try {
     if ($Publish) {
         $gh = 'C:\Program Files\GitHub CLI\gh.exe'
         if (-not (Test-Path -LiteralPath $gh -PathType Leaf)) { throw 'No se encontro GitHub CLI.' }
+        $savedPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
         & $gh release view "v$Version" --repo $Repo *> $null
-        if ($LASTEXITCODE -eq 0) { throw "Ya existe la Release v$Version." }
+        $releaseExists = $LASTEXITCODE -eq 0
+        $ErrorActionPreference = $savedPreference
+        if ($releaseExists) { throw "Ya existe la Release v$Version." }
         & $gh release create "v$Version" $Archive $ShaPath --repo $Repo --title "Reto Lulu $Version" --notes "Build $Version de Reto Lulu."
         if ($LASTEXITCODE -ne 0) { throw 'GitHub no pudo publicar la Release.' }
         Write-Host "Release v$Version publicada correctamente." -ForegroundColor Green

@@ -10,6 +10,8 @@ Instalador y actualizador del modpack **Reto Lulu**.
 
 El archivo BAT descarga automaticamente el PowerShell mas reciente. El instalador usa la misma carpeta desde la que se ejecuta y no requiere Git ni CurseForge.
 
+`RetoLuluLauncher.exe` no se distribuye con el modpack mientras no tenga una firma digital y una compilacion publica verificable.
+
 ## Para publicar una build
 
 Ejecuta `Crear_Build_RetoLulu.bat`, escribe la version y espera a que termine la carga a GitHub Releases.

@@ -20,6 +20,7 @@ $excludedTopLevel = @(
 $excludedFiles = @(
     '.retolulu-state.json', '.retolulu-installed-manifest.json',
     '.gitignore', '.curseclient', 'RetoLulu.code-workspace',
+    'RetoLuluLauncher.exe',
     'Crear_Build_RetoLulu.bat', 'Crear_Build_RetoLulu.ps1',
     'README.md', 'minecraftinstance.json', 'realms_persistence.json',
     'usercache.json', 'usernamecache.json'
